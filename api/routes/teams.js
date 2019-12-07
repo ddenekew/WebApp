@@ -5,9 +5,24 @@ const mongoose = require('mongoose');
 const Team = require('../models/team_model');
 
 router.get('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'Handling GET requests to /teams'
-    });
+    Team.find()
+        .exec()
+        .then(docs => {
+            console.log(docs);
+            // if (docs.length >= 0) {
+                res.status(200).json(docs);
+            // } else {
+            //     res.status(404).json({
+            //         message: 'No entries found'
+            //     });
+            // }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        });
 });
 
 router.post('/', (req, res, next) => {
@@ -27,7 +42,7 @@ router.post('/', (req, res, next) => {
         })
         .catch(err => {
             console.log(err);
-            res.status(201).json({
+            res.status(500).json({
                 error: err
             });
     });
@@ -47,17 +62,37 @@ router.get('/:teamID', (req, res, next) => {
             });
 });
 
-router.patch('/:teamID', (req, res, next) => {
-    res.status(200).json({
-        message: 'Updated teams'
-    });
+router.patch('/:teamtID', (req, res, next) => {
+    const id = req.params.teamID;
+    const updateOps = {};
+    for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    team.update({ _id: id}, {$set: updateOps })
+        .exec()
+        .then(result => {
+            console.log(result);
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err});
+        });
 });
 
 router.delete('/:teamID', (req, res, next) => {
-    res.status(200).json({
-        message: 'Deleted team'
-    });
+    const id = req.params.teamID;
+    Product.remove({ _id: id})
+        .exec()
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        });
 });
-
 
 module.exports = router;
