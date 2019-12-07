@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+
+    <head>
+        <title>Player Home</title>
+
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="./scripts/script.js"></script>
+        <style>
+            table, th, td {
+                border: 1px solid black;
+            }
+        </style>
+    </head>
+        
+    <body>
+    
+        <h2>Player Selection</h2>
+
+        <p>Please select a Team and a member below</p>
+        <form id="TeamSelection" action="#">
+            Team ID: 
+            <input type="text" name="TeamID" id="TeamID"><br><br>
+            <input type="button" value="Submit" onclick="selectSpecificTeam();"><br>
+        </form>
+        
+        <br><br>
+        
+        <form id="TeamCreate" action="#">
+            Team Club: <input placeholder="Club" type="text" id="TeamClub"> <br>
+            Team Country: <input placeholder="Country" type="text" id="TeamCountry"> <br><br>
+            <input type="button" value="Create Team" onclick="postTeam();"><br>
+        </form>
+        
+        <br><br>
+
+        <button id="btn" onclick="displayAllTeams()">Display All Teams</button><br>
+        <table style="width: 100%">
+            <thead>
+                    <tr>
+                        <th>Club</th>
+                        <th>Country</th>
+                        <th>ID</th>
+                    </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+        </table>
+        <p id="here"></p>
+
+    </body>
+    
+</html>
