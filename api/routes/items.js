@@ -2,22 +2,23 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-const Player = require('../models/player_model')
+const item = require('../models/item_model')
+const Jersey = require('../models/jersey_model');
 
 router.get('/', (req, res, next) => {
-    Player.find()
+    item.find()
         .select('-__v')
-        .populate('team, '-__v)
+        .populate('jersey', '-__v')
         .exec()
         .then(docs => {
             res.status(200).json({
                 count: docs.length,
-                players: docs.map(doc => {
+                items: docs.map(doc => {
                     return {
-                        Player: doc,
+                        item: doc,
                         request: {
                             type: 'GET',
-                            url: 'http://localhost:3000/players/' + doc._id
+                            url: 'http://localhost:3000/items/' + doc._id
                         }
                     }
                 })
@@ -30,32 +31,32 @@ router.get('/', (req, res, next) => {
         });
 });
 router.post('/', (req, res, next) => {
-    Team.findById(req.body.teamID)
-        .then(team => {
-            if (!team) {
+    Jersey.findById(req.body.jerseyID)
+        .then(jersey => {
+            if (!jersey) {
                 return res.status(404).json({
-                    message: 'Team not found'
+                    message: 'Jersey not found'
                 });
             };
-            const Player = new Player({
+            const item = new Item({
                 _id: mongoose.Types.ObjectId(),
-                member: req.body.member,
-                team: req.body.teamID
+                quantity: req.body.quantity,
+                jersey: req.body.jerseyID
             });
-            return Player.save()
+            return item.save()
         })
         .then(result => {
             console.log(result);
             res.status(201).json({
-                message: 'Player stored',
-                createdPlayer: {
+                message: 'Item stored',
+                createdItem: {
                     _id: result.id,
-                    team: result.team,
-                    member: result.qmember
+                    jersey: result.jersey,
+                    quantity: result.quantity
                 },
                 request: {
                     type: 'GET',
-                    url: 'http://localhost:3000/players/' + result._id
+                    url: 'http://localhost:3000/items/' + result._id
                 }
             });
         })
@@ -67,22 +68,22 @@ router.post('/', (req, res, next) => {
         });
 });
 
-router.get('/:playerID', (req, res, next) => {
-    Player.findById(req.params.playerID)
+router.get('/:itemID', (req, res, next) => {
+    Item.findById(req.params.itemID)
         .select('-__v')
-        .populate('team, '-__v)
+        .populate('jersey', '-__v')
         .exec()
-        .then(Player => {
-            if (!Player) {
+        .then(item => {
+            if (!item) {
                 return res.status(404).json({
-                    message: "Player not found"
+                    message: "Item not found"
                 });
             }
             res.status(200).json({
-                Player: Player,
+                item: item,
                 request: {
                     type: 'GET',
-                    url: 'http://localhost:3000/players'
+                    url: 'http://localhost:3000/items'
                 }
             });
         })
@@ -93,16 +94,16 @@ router.get('/:playerID', (req, res, next) => {
         });
 });
 
-router.delete('/:playerID', (req, res, next) => {
-    Player.remove({ _id: req.params.playerID })
+router.delete('/:itemID', (req, res, next) => {
+    Item.remove({ _id: req.params.itemID })
         .exec()
         .then(result => {
             res.status(200).json({
-                message: 'Player deleted',
+                message: 'Item deleted',
                 require: {
                     type: 'POST',
-                    url: 'http://localhost:3000/players',
-                    body: { teamID: "ID", member: "Strings" }
+                    url: 'http://localhost:3000/items',
+                    body: { jerseyID: "ID", quantity: "Number" }
                 }
             });
     });

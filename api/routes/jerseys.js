@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const Team = require('../models/team_model');
+const Jersey = require('../models/jersey_model');
 const multer = require('multer');
 
 const myStorage = multer.diskStorage( {
@@ -32,17 +32,17 @@ const upload = multer({
 });
 
 router.get('/', (req, res, next) => {
-    Team.find()
+    Jersey.find()
         .exec()
         .then(docs => {
             const response = {
                 count: docs.length,
-                teams: docs.map(doc => {
+                jerseys: docs.map(doc => {
                     return {
-                        team: doc,
+                        jersey: doc,
                         request: {
                             type: "GET",
-                            url: "http://localhost:3000/teams/" + doc._id
+                            url: "http://localhost:3000/jerseys/" + doc._id
                         }
                     }
                 })
@@ -57,29 +57,29 @@ router.get('/', (req, res, next) => {
         });
 });
 
-router.post('/', upload.single('teamImage'), (req, res, next) => {
+router.post('/', upload.single('jerseyImage'), (req, res, next) => {
     console.log(req.file);
-    const team = new Team({
+    const jersey = new Jersey({
         _id: new mongoose.Types.ObjectId(),
-        club: req.body.club,
-        country: req.body.country,
-        teamImage: req.file.path
+        name: req.body.name,
+        price: req.body.price,
+        jerseyImage: req.file.path
     });
-    team
+    jersey
         .save()
         .then(result => {
             console.log(result);
             res.status(201).json({
-                message: 'Created team successfully',
-                createdTeam: {
-                    club: result.club,
-                    country: result.country,
+                message: 'Created jersey successfully',
+                createdJersey: {
+                    name: result.name,
+                    price: result.price,
                     _id: result._id,
-                    crazy_lable: result.teamImage
+                    super_lable: result.jerseyImage
                 },
                 request: {
                     type: "GET",
-                    url: "http://localhost:3000/teams/" + result._id
+                    url: "http://localhost:3000/jerseys/" + result._id
                 }
             });
         })
@@ -91,18 +91,18 @@ router.post('/', upload.single('teamImage'), (req, res, next) => {
     });
 });
 
-router.get('/:teamID', (req, res, next) => {
-    const id = req.params.teamID;
-    Team.findById(id)
+router.get('/:jerseyID', (req, res, next) => {
+    const id = req.params.jerseyID;
+    Jersey.findById(id)
         .select('-__v')
         .exec()
         .then(doc => {
             res.status(200).json({
-                team: doc,
+                jersey: doc,
                 request: {
                     type: 'GET',
-                    description: 'Get all teams',
-                    url: 'http://localhost:3000/teams'
+                    description: 'Get all jerseys',
+                    url: 'http://localhost:3000/jerseys'
                 }
             });
         })
@@ -112,20 +112,20 @@ router.get('/:teamID', (req, res, next) => {
             });
 });
 
-router.patch('/:teamtID', (req, res, next) => {
-    const id = req.params.teamID;
+router.patch('/:jerseyID', (req, res, next) => {
+    const id = req.params.jerseyID;
     const updateOps = {};
     for (const ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
-    team.update({ _id: id}, {$set: updateOps })
+    jersey.update({ _id: id}, {$set: updateOps })
         .exec()
         .then(result => {
             res.status(200).json({
-                message: 'Team updated',
+                message: 'Jersey updated',
                 request: {
                     type: 'GET',
-                    url: 'http://localhost:3000/teams/' + id
+                    url: 'http://localhost:3000/jerseys/' + id
                 }
             });
         })
@@ -135,17 +135,17 @@ router.patch('/:teamtID', (req, res, next) => {
         });
 });
 
-router.delete('/:teamID', (req, res, next) => {
-    const id = req.params.teamID;
-    team.deleteOne({ _id: id})
+router.delete('/:jerseyID', (req, res, next) => {
+    const id = req.params.jerseyID;
+    Jersey.deleteOne({ _id: id})
         .exec()
         .then(result => {
             res.status(200).json({
-                message: 'Team deleted',
+                message: 'Jersey deleted',
                 request: {
                     type: 'POST',
-                    url: 'http://localhost:3000/teams',
-                    body: { club: 'String', country: 'String' }
+                    url: 'http://localhost:3000/jerseys',
+                    body: { name: 'String', price: 'Number' }
                 }
             });
         })

@@ -1,15 +1,15 @@
-function displayAllTeams() {
-    const Url='http://localhost:3000/teams';
+function displayAllJerseys() {
+    const Url='http://localhost:3000/jerseys';
     $.ajax({
         url: Url,
         method:"GET",
         success: result => {
             $('#tbody tr').remove();
-            $.each(result.teams, (i, item) => {
+            $.each(result.jerseys, (i, ittem) => {
                 var eachrow = "<tr>"
-                            + "<td>" + item.team.name + "</td>"
-                            + "<td>" + item.team.price + "</td>"
-                            + "<td>" + item.team._id + "</td>"
+                            + "<td>" + ittem.jersey.name + "</td>"
+                            + "<td>" + ittem.jersey.price + "</td>"
+                            + "<td>" + ittem.jersey._id + "</td>"
                             + "</tr>";
                 $('#tbody').append(eachrow);
             })
@@ -20,18 +20,18 @@ function displayAllTeams() {
     });
 };
 
-function displaySpecificTeam() {
-    document.getElementById("TeamSelection").addEventListener("click", function(event){
+function displaySpecificJersey() {
+    document.getElementById("JSelect").addEventListener("click", function(event){
         event.preventDefault()
     });
-    var id = document.getElementById('TeamID').value
-    const Url2='http://localhost:3000/teams/' + id;
+    var id = document.getElementById('JerseyID').value
+    const Url2='http://localhost:3000/jerseys/' + id;
     $.ajax({
         url: Url2,
         method:"GET",
         success: result => {
             console.log(result);
-            document.getElementById("TeamSelection").reset();
+            document.getElementById("JSelect").reset();
         },
         error: error =>{
             console.log(`Error ${error}`)
@@ -39,22 +39,22 @@ function displaySpecificTeam() {
     });
 };
 
-function postTeam() {
-    document.getElementById("TeamSelection").addEventListener("click", function(event){
+function postJersey() {
+    document.getElementById("JSelect").addEventListener("click", function(event){
         event.preventDefault()
     });
-    var t = new Team(
-        document.getElementById('TeamClub').value,
-        document.getElementById('TeamCountry').value
+    var j = new Jersey(
+        document.getElementById('jName').value,
+        document.getElementById('jPrice').value
     );
-    const Url3='http://localhost:3000/teams';
+    const Url3='http://localhost:3000/jerseys';
     $.ajax({
         url: Url3,
         method:"POST",
-        data: t,
+        data: j,
         success: result => {
             console.log(result);
-            document.getElementById("TeamCreate").reset();
+            document.getElementById("JCreate").reset();
         },
         error: error =>{
             console.log(`Error ${error}`)
@@ -62,7 +62,7 @@ function postTeam() {
     });
 }
 
-function team(tClub,tCountry){
-    this.club = tClub;
-    this.country = tCountry;
+function jersey(jName,jPrice){
+    this.name = jName;
+    this.price = jPrice;
 }

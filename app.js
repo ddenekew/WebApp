@@ -4,8 +4,8 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const teamRoutes = require('./api/routes/teams');
-const playerRoutes = require('./api/routes/players');
+const jerseyRoutes = require('./api/routes/jerseys');
+const itemRoutes = require('./api/routes/items');
 
 mongoose.connect('mongodb+srv://DanielD:' + process.env.MONGO_ATLAS_PW +
     '@cluster0-6wwly.mongodb.net/test?retryWrites=true&w=majority',
@@ -39,9 +39,13 @@ app.use('/styles', express.static(__dirname));
 app.use('/image', express.static(__dirname + '/images'));
 app.use('/scripts', express.static(__dirname + '/scripts'));
 
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html'); 
+});
+
  // Routers which should handle requests
-app.use('./teams', teamRoutes);
-app.use('./players', playerRoutes);
+app.use('./jerseys', jerseyRoutes);
+app.use('./items', itemRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Not Found');
